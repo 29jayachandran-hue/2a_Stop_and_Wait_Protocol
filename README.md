@@ -11,62 +11,68 @@ To write a python program to perform stop and wait protocol
 ## PROGRAM
 ## Server:
 ```
-import socket
 
-server = socket.socket()
-server.bind(('localhost', 8000))
-server.listen(1)
-print("Server is listening...")
-conn, addr = server.accept()
-print(f"Connected with {addr}")
-
-while True:
-    data = conn.recv(1024).decode()
-
-    if data:
-        print(f"Received: {data}")
-        conn.send("ACK".encode())
-
-        if data.lower() == 'exit':  
-            print("Connection closed by client")
-            conn.close()
-            break
-```
-## Client:
-```
 import socket
 import time
 
-client = socket.socket()
-client.connect(('localhost', 8000))
-client.settimeout(5)  
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind(('localhost', 9999))
+server_socket.listen(1)
+
+print("Server: Waiting for client connection...")
+conn, addr = server_socket.accept()
+print(f"Server: Connected to {addr}\n")
 
 while True:
-    msg = input("Enter a message (or type 'exit' to quit): ")
-
-    client.send(msg.encode())  
-
-    if msg.lower() == 'exit':  
-        print("Connection closed by client")
-        client.close()
+  
+    frame = conn.recv(1024).decode()
+    if not frame or frame == "END":
+        print("Server: Transmission completed.")
         break
 
-    try:
-        ack = client.recv(1024).decode()
-        if ack == "ACK":
-            print(f"Server acknowledged: {ack}")
-    except socket.timeout:
-        print("No ACK received, retransmitting...")
-        continue  
+    print(f"Server: Received Frame {frame}")
+
+    time.sleep(1)
+
+    ack = f"ACK{frame}"
+    conn.send(ack.encode())
+    print(f"Server: Sent {ack}\n")
+
+conn.close()
+server_socket.close()
 ```
-## OUTPUT
-## Server
-<img width="916" height="259" alt="Screenshot 2025-09-23 084755" src="https://github.com/user-attachments/assets/feda5607-d3b6-4c83-8e89-6bc450fa4858" />
+## Client:
+```
+
+import socket
+import time
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect(('localhost', 9999))
+
+frames = int(input("Enter number of frames to send: "))
+
+for i in range(frames):
+    frame = str(i)
+    print(f"Client: Sending Frame {frame}")
+    client_socket.send(frame.encode())
+
+    ack = client_socket.recv(1024).decode()
+    print(f"Client: Received {ack}\n")
+    time.sleep(1)  # Simulate delay
+
+client_socket.send("END".encode())
+print("Client: Transmission completed.")
+
+client_socket.close()
+```
+## OUTPUT:
+
+## Server & Client:
+
+<img width="1317" height="661" alt="image" src="https://github.com/user-attachments/assets/150ac6e5-847e-456b-8e1b-e0b2283eac37" />
 
 
-## Client
-<img width="925" height="266" alt="Screenshot 2025-09-23 084917" src="https://github.com/user-attachments/assets/a3aedd9d-0509-4e07-a5d2-2be18e98ced2" />
 
-
-## RESULT
+## RESULT:
 Thus, python program to perform stop and wait protocol was successfully executed.
