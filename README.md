@@ -70,7 +70,8 @@ client_socket.close()
 
 ## Server & Client:
 
-<img width="1317" height="661" alt="image" src="https://github.com/user-attachments/assets/150ac6e5-847e-456b-8e1b-e0b2283eac37" />
+<img width="1310" height="612" alt="image" src="https://github.com/user-attachments/assets/54407210-e292-4295-8fda-88e1a11f609f" />
+
 
 
 
